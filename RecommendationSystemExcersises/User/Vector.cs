@@ -7,7 +7,7 @@ namespace RecommendationSystemExcersises
 {
     class Vector
     {
-        public List<double> values;
+        public readonly List<double> values;
 
         public Vector(List<double> values)
         {
@@ -17,10 +17,10 @@ namespace RecommendationSystemExcersises
         public double dotProduct(Vector other)
         {
             double returnValue = 0.0f;
+
             for(int i = 0; i < this.values.Count; i++)
             {
-                //add exception on unequal sizes?
-                if(i <= other.values.Count)
+                if(i <= (other.values.Count - 1))
                     returnValue += this.values[i] * other.values[i];
             }
             return returnValue;

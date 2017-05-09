@@ -7,24 +7,26 @@ namespace RecommendationSystemExcersises
     {
         static void Main(string[] args)
         {
-            Vector v = new Vector(new List<double>(){4.75, 4.5, 5, 4.25, 4});
-            Vector k = new Vector(new List<double>(){4, 3, 5, 2 ,1});
-            
-            Console.WriteLine("Sample vector 1: " + v.ToString());
-            Console.WriteLine("Sample vector 2: " + k.ToString());         
+            var allUsersAndTheirRatings = Parser.parseUserRatings();   
 
-            IDistance distanceMeasurer = new EuclideanDistance();
-            Console.WriteLine("Euclidean distance between v1 and v2: " + distanceMeasurer.computeDistance(v,k));
+            foreach(var userKey in allUsersAndTheirRatings.Keys)    
+            {
+                Console.WriteLine("Looking at user " + userKey);
+                var currUserProductsAndRatings = allUsersAndTheirRatings[userKey].productsAndRatings;
+                foreach(var productKey in currUserProductsAndRatings.Keys)
+                {
+                     Console.WriteLine(" This user gave product " + productKey + " the rating " 
+                                       + currUserProductsAndRatings[productKey]);
+                }     
+            }    
 
-            distanceMeasurer = new ManhattanDistance();
-            Console.WriteLine("Manhattan distance between v1 and v2: " + distanceMeasurer.computeDistance(v,k));
+            //if map is ordered on product its no problem:)
+            //if its not, correlation measures wont be right.
+            //its not. use quicksort on it.
+            //then, get users 3 and 4 with their ordered productratings and do pearson on it.
 
             ISimilarity similarityMeasurer = new PearsonSimilarity();
-            Console.WriteLine("Pearson similarity between v1 and v2: " + similarityMeasurer.computeSimilarity(v,k));  
-
-            similarityMeasurer = new CosineSimilarity();
-            Console.WriteLine("Cosine similarity between v1 and v2: " + similarityMeasurer.computeSimilarity(v,k));  
-                             
+            Console.WriteLine("Pearson similarity between user 3 and user 4: " + similarityMeasurer.computeSimilarity(v,k)); 
         }
     }
 }
