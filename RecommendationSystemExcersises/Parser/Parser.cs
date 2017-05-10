@@ -7,7 +7,7 @@ namespace RecommendationSystemExcersises
 {
     class Parser
     {
-        public static Dictionary<double, UserRatings> parseUserRatings()
+         public static Dictionary<double, UserRatings> parseUserRatings()
         {
             var allUsersRatings = new Dictionary<double, UserRatings>();
 

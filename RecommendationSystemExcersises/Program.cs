@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace RecommendationSystemExcersises
@@ -7,30 +8,24 @@ namespace RecommendationSystemExcersises
     {
         static void Main(string[] args)
         {
-            /* 
             var allUsersAndTheirRatings = Parser.parseUserRatings();   
 
             foreach(var userKey in allUsersAndTheirRatings.Keys)    
             {
                 Console.WriteLine("Looking at user " + userKey);
+
                 var currUserProductsAndRatings = allUsersAndTheirRatings[userKey].productsAndRatings;
-                foreach(var productKey in currUserProductsAndRatings.Keys)
+                var sortedProductsAndRatings = QuickSort.quickSortDict(currUserProductsAndRatings);
+
+                foreach(var productKey in sortedProductsAndRatings.Keys)
                 {
                      Console.WriteLine(" This user gave product " + productKey + " the rating " 
                                        + currUserProductsAndRatings[productKey]);
                 }     
             }    
-            */
-            var list = new List<int>(){ 1,5,3,2};
+            //Only wanna look at products they both rated.
+            //
 
-            Console.WriteLine("UNORDERED: ");
-            list.ForEach(x => Console.WriteLine(x));
-                
-            Utilities.quickSort(list, 0, list.Count - 1);
-
-            Console.WriteLine("ORDERED: ");
-            list.ForEach(x => Console.WriteLine(x));            
-            
             //ISimilarity similarityMeasurer = new PearsonSimilarity();
             //Console.WriteLine("Pearson similarity between user 3 and user 4: " + similarityMeasurer.computeSimilarity(v,k)); 
         }

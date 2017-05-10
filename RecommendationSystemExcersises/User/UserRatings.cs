@@ -14,5 +14,14 @@ namespace RecommendationSystemExcersises
         {
             this.productsAndRatings = productsAndRatings;
         }
+
+        public Dictionary<double, double> getOverlappingRatings(UserRatings other)
+        {
+            var overlappingRatings = new Dictionary<double, double>();
+            foreach(double product in this.productsAndRatings.Keys)
+            {
+
+            }
+        }
     }
 }
