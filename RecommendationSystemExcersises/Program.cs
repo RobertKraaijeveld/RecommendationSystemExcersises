@@ -7,6 +7,7 @@ namespace RecommendationSystemExcersises
     {
         static void Main(string[] args)
         {
+            /* 
             var allUsersAndTheirRatings = Parser.parseUserRatings();   
 
             foreach(var userKey in allUsersAndTheirRatings.Keys)    
@@ -24,9 +25,14 @@ namespace RecommendationSystemExcersises
             //if its not, correlation measures wont be right.
             //its not. use quicksort on it.
             //then, get users 3 and 4 with their ordered productratings and do pearson on it.
+            */  
 
-            ISimilarity similarityMeasurer = new PearsonSimilarity();
-            Console.WriteLine("Pearson similarity between user 3 and user 4: " + similarityMeasurer.computeSimilarity(v,k)); 
+            var unordered = new List<int>(){ 1,5,3,2};
+            var ordered = Utilities.quickSort(unordered);
+
+            
+            //ISimilarity similarityMeasurer = new PearsonSimilarity();
+            //Console.WriteLine("Pearson similarity between user 3 and user 4: " + similarityMeasurer.computeSimilarity(v,k)); 
         }
     }
 }

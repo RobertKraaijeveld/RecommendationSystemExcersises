@@ -36,7 +36,5 @@ namespace RecommendationSystemExcersises
             }
             return allUsersRatings;
         }
-
-        public static 
     }
 }
