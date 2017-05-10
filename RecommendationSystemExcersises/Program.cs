@@ -20,16 +20,16 @@ namespace RecommendationSystemExcersises
                                        + currUserProductsAndRatings[productKey]);
                 }     
             }    
+            */
+            var list = new List<int>(){ 1,5,3,2};
 
-            //if map is ordered on product its no problem:)
-            //if its not, correlation measures wont be right.
-            //its not. use quicksort on it.
-            //then, get users 3 and 4 with their ordered productratings and do pearson on it.
-            */  
+            Console.WriteLine("UNORDERED: ");
+            list.ForEach(x => Console.WriteLine(x));
+                
+            Utilities.quickSort(list, 0, list.Count - 1);
 
-            var unordered = new List<int>(){ 1,5,3,2};
-            var ordered = Utilities.quickSort(unordered);
-
+            Console.WriteLine("ORDERED: ");
+            list.ForEach(x => Console.WriteLine(x));            
             
             //ISimilarity similarityMeasurer = new PearsonSimilarity();
             //Console.WriteLine("Pearson similarity between user 3 and user 4: " + similarityMeasurer.computeSimilarity(v,k)); 

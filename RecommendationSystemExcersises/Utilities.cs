@@ -31,47 +31,82 @@ namespace RecommendationSystemExcersises
         Why? All elements to the left of the pivot, in array[p..q-1], are less than or equal to the pivot and are sorted, and all elements to the right of the pivot, 
         in array[q+1..r], are greater than the pivot and are sorted. The elements in array[p..r] can't help but be sorted!
                 
-        
+
+        QUICKSORT (A, p, r)
+        if p < r
+            q = PARTITION(A, p, r)
+            QUICKSORT(A, p, q-1)
+            QUICKSORT(A, q+1, r)
          */
-        public static List<int> quickSort(List<int> vals, int left, int right)
+
+         //{5,2,PIVOT,3,1}
+        public static void quickSort(List<int> vals, int leftIndex, int rightIndex)
         {
-            int pivot = vals[(right + left) / 2];
-
-            while(l <= r)
+            //if this is false, list is 0 or 1 values so there is no sorting to be done.
+            if(leftIndex < rightIndex)
             {
+                var newPivotLoc = sort(vals, leftIndex, rightIndex);
+                quickSort(vals, leftIndex, newPivotLoc - 1);
+                quickSort(vals, newPivotLoc + 1, rightIndex);                
+            }   
+        }
 
-            }
+        /*
+        {1,5,3,4}
 
+        pivot = 4;
+        lingerer = 0;
+
+        1 <= 4 = true
+            swap 1 and 1.
+            lingerer = 1;
+        --
+        {1,5,3,4}
+        5 <= 4 == false!
+        --
+        lingerer = 1;
+        currIndex = 2;
+        3 <= 4 = true
+            swap 3 and 5
+            lingerer = 2;
+        --
+        {1,3,5,4}
+        curr = 5
+        lingerer val = 3
+        5 <= 4 = false
+        loop done.
+        swap vals[lingerer] which is 5, and the pivot.
         
-            /*
-            2,6,1,3,0
+        RESULT: {1,3,4,5}
+        */
 
-            pivot = 1
-
-            left = 0
-            right = 2,6,3
-            */
-
-            foreach(var val in l)
-            {
-                if(val <= pivot)
-                    left.Add(val);
-                else
-                    right.Add(val);                    
-            }
-            left.AddRange(right);
-            return left;
-            
-            //sort first half from 0 to pivot - 1
-            //sort second half from pivot + 1 to end
-            //return
-        }
-
-        public static List<int> partition(List<int> l, int pivot)
+        private static int sort(List<int> vals, int leftIndex, int rightIndex)
         {
+            var pivot = vals[rightIndex];
+            var lingerer = leftIndex;
+
+            //rightmost index is pivot, dont want to compare pivot to pivot:)
+            for(int currIndex = leftIndex; currIndex < rightIndex; currIndex++)
+            {
+                if(vals[currIndex ] <= pivot)
+                {
+                    //swap the current element, which is smaller than pivot with the lingerer
+                    swap(vals, lingerer, currIndex);
+                    //lingerer only gets incremented on smaller values!  
+                    lingerer++;                    
+                }
+            }
+            //swap lingerer element which apparently is larger than pivot with pivot.
+            swap(vals, lingerer, rightIndex);
             
+            return lingerer;
         }
 
-
+        private static void swap(List<int> vals, int indexA, int indexB)
+        {
+            var tempA = vals[indexA];
+            vals[indexA] = vals[indexB];
+            vals[indexB] = tempA;
+        }
     }
 }
