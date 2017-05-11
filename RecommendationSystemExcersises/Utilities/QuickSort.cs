@@ -7,9 +7,9 @@ namespace RecommendationSystemExcersises
     //why cant i just make the method signature generic?
     static class QuickSort
     {
-        public static Dictionary<double, double> quickSortDict(Dictionary<double, double> dict)
+        public static Dictionary<int, double> quickSortDict(Dictionary<int, double> dict)
         {
-            var orderedDict = new Dictionary<double, double>();
+            var orderedDict = new Dictionary<int, double>();
 
             var dictKeys = dict.Keys.ToList();
             quickSort(dictKeys, 0, dictKeys.Count-1);
@@ -22,8 +22,7 @@ namespace RecommendationSystemExcersises
             return orderedDict;
         }
 
-        //double is way too specific
-        public static void quickSort(List<double> vals, int leftIndex, int rightIndex)
+        public static void quickSort(List<int> vals, int leftIndex, int rightIndex)
         {
             //if this is false, list is 0 or 1 values so there is no sorting to be done.
             if(leftIndex < rightIndex)
@@ -34,7 +33,7 @@ namespace RecommendationSystemExcersises
             }   
         }
 
-        private static int sort(List<double> vals, int leftIndex, int  rightIndex)
+        private static int sort(List<int> vals, int leftIndex, int  rightIndex)
         {
             var pivot = vals[rightIndex];
             var lingerer = leftIndex;
@@ -57,7 +56,7 @@ namespace RecommendationSystemExcersises
             return lingerer;
         }
 
-        private static void swap(List<double> vals, int indexA, int indexB)
+        private static void swap(List<int> vals, int indexA, int indexB)
         {
             var tempA = vals[indexA];
             vals[indexA] = vals[indexB];

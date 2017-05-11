@@ -7,8 +7,9 @@ namespace RecommendationSystemExcersises
 {
     class Vector
     {
-        public readonly List<double> values;
+        public readonly List<double> values = new List<double>();
 
+        public Vector(){}
         public Vector(List<double> values)
         {
             this.values = values;
@@ -28,15 +29,12 @@ namespace RecommendationSystemExcersises
 
         public double getLength() 
         {
-            double squaredVectorValues = 0.0f;
-            this.values.ForEach(val => squaredVectorValues += Math.Pow(val,2));
-
-            return Math.Sqrt(squaredVectorValues);
+            return Math.Sqrt(this.values.Sum(x => Math.Pow(x, 2)));
         }
 
         public override string ToString()
         {
-            return string.Join(", ", values);
+            return "(" + string.Join(", ", values) + ")";
         }
     }
 }
