@@ -32,19 +32,13 @@ namespace RecommendationSystemExcersises
                     allPredictedRatingsPerProduct.Add(productNo, predictedRatingForCurrProduct);
                 }
             }
-
-            allPredictedRatingsPerProduct.OrderByDescending(x => x.Value);
-            return allPredictedRatingsPerProduct.Take(recommendationAmount).OrderByDescending(x => x.Value).ToList();
+            return allPredictedRatingsPerProduct.OrderByDescending(key => key.Value).Take(recommendationAmount).OrderByDescending(key => key.Value).ToList();
             /*
-                Using the MovieLens dataset, consider user 186 and create a list of
-                the 8 top recommendations for him, together with their predicted
-                rating.
-
                 o Based on the results you get, do you think it could be better to
                 compute the predicted rating only for movies which were rated by
                 more than one nearest neighbour (i.e., at least two or three)? Why?
 
-                o Modify your algorithm to compute the predicted ratings
+                o Modify your algorithm to compute the  predicted ratings
                 considering only products rated by at least 3 neighbours.
                 Execute again the program to create the list of 8 top
                 recommendations for user 186.

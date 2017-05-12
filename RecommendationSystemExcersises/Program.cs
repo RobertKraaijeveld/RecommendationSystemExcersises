@@ -52,7 +52,6 @@ namespace RecommendationSystemExcersises
             ISimilarity similarityMeasure = new PearsonSimilarity();
 
             var userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
-            userSevenNeighboursAndSimilarities.ToList().ForEach(x => Console.WriteLine("User 7 has neighbour with id " + x.Key.userId + " similarity using pearson is " + x.Value));
 
             Console.WriteLine("");            
             IRatingPrediction weightedAvgPrediction = new WeightedAveragePrediction();
@@ -76,7 +75,6 @@ namespace RecommendationSystemExcersises
             Console.WriteLine("USER NO. 7 RATED ITEM 106 AS A 2.8: REDOING PREDICTIONS OF ITEMS 101 and 103");
             userSeven.ratings[106] = 2.8;
             userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
-            userSevenNeighboursAndSimilarities.ToList().ForEach(x => Console.WriteLine("User 7 has neighbour with id " + x.Key.userId + " similarity using pearson is " + x.Value));
 
             Console.WriteLine("User no. 7 predicted rating of product no. 101, with rating of product no. 106 set to 2.8 using pearson is "
                                + weightedAvgPrediction.predictRating(101, userSeven, userSevenNeighboursAndSimilarities));
@@ -88,7 +86,6 @@ namespace RecommendationSystemExcersises
             Console.WriteLine("USER NO. 7 NOW RATED ITEM 106 AS A 5: REDOING PREDICTIONS OF ITEMS 101 and 103");
             userSeven.ratings[106] = 5;
             userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
-            userSevenNeighboursAndSimilarities.ToList().ForEach(x => Console.WriteLine("User 7 has neighbour with id " + x.Key.userId + " similarity using pearson is " + x.Value));
 
             Console.WriteLine("User no. 7 predicted rating of product no. 101, with rating of product no. 106 updated to 5 using pearson is "
                                + weightedAvgPrediction.predictRating(101, userSeven, userSevenNeighboursAndSimilarities));
@@ -100,7 +97,6 @@ namespace RecommendationSystemExcersises
         private static void nDimensionalRecommendationDiagnostic()
         {
             var sortedUserItems = getParsedAndSortedUserItems("docs/u.data", new char[2] { ' ', '\t' });
-            //get distinct users so nearest neighbour doesnt get double keys;
 
             var user186 = sortedUserItems[186];
 
@@ -113,13 +109,17 @@ namespace RecommendationSystemExcersises
             var top8Recommendations = recommendationCreator.getListOfTopPredictedRatings(recommendationAmount, sortedUserItems, user186);
 
             Console.WriteLine("Top 8 recommendations for user 186: ");
-            top8Recommendations.ForEach(x => Console.WriteLine("product no. " + x.Key + ", predicted rating " + x.Value));
+            Console.WriteLine("-------------------------------------");
+            Console.WriteLine("");            
+
+            int counter = 0;
+            top8Recommendations.ForEach(x => Console.WriteLine("Top " + (++counter) + " product: Movie no. " + x.Key + ", predicted rating " + x.Value));
 
         }
 
 
         /*
-            HELPERS
+        HELPERS
         */
 
         private static Dictionary<int, User> getParsedAndSortedUserItems(string fileName, char[] delimiters)

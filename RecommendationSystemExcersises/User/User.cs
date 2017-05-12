@@ -64,9 +64,9 @@ namespace RecommendationSystemExcersises
 
         private void setNormalRatingsVectors(ref Dictionary<int, Vector> outDict, User otherUser)
         {
-            foreach(int productKey in this.ratings.Keys)
+            foreach (int productKey in this.ratings.Keys)
             {
-                if(otherUser.ratings.ContainsKey(productKey))
+                if (otherUser.ratings.ContainsKey(productKey))
                 {
                     var myRating = ratings[productKey];
                     var otherUsersRating = otherUser.ratings[productKey];
@@ -76,8 +76,8 @@ namespace RecommendationSystemExcersises
                 }
             }
         }
-        
-    
+
+
         public Dictionary<User, double> getNearestNeighboursAndSimilarities(int maximumNeighboursAmount, List<User> allUsers, ISimilarity similarityMeasurer)
         {
             //make parameter?
@@ -97,18 +97,16 @@ namespace RecommendationSystemExcersises
 
                     var currentSimilarity = similarityMeasurer.computeSimilarity(myRatingVector, otherUserRatingVector);
 
-                    if(this.userId == 4)
-                    {
-                        Console.WriteLine("User 4s similarity with other user " + currentUser.userId + " is " + currentSimilarity + " with the minimum being " + similarityMinimum);
-                    }
+
+
 
                     if (currentSimilarity > similarityMinimum && hasRatedDifferentProducts(currentUser))
                     {
-                        if (neighboursAndSimilarities.Count <= maximumNeighboursAmount)
+                        if (neighboursAndSimilarities.Count < maximumNeighboursAmount)
                         {
                             neighboursAndSimilarities.Add(currentUser, currentSimilarity);
                         }
-                        else if (neighboursAndSimilarities.Count == maximumNeighboursAmount)
+                        else
                         {
                             var lowestSimilarity = getLowestSimilarity(neighboursAndSimilarities);
                             var leastSimilarNeighbour = neighboursAndSimilarities.Aggregate((l, r) => l.Value < r.Value ? l : r).Key;
@@ -134,7 +132,7 @@ namespace RecommendationSystemExcersises
 
         private bool neighbourAlreadyPresent(Dictionary<double, User> neighboursAndSimilarities, int userId)
         {
-            return neighboursAndSimilarities.Values.Where(x => x.userId == userId).ToList().Count > 1;
+            return neighboursAndSimilarities.Values.Where(x => x.userId == userId).ToList().Count >= 1;
         }
 
         private double getLowestSimilarity(Dictionary<User, double> similaritiesAndNeighbours)
@@ -144,7 +142,7 @@ namespace RecommendationSystemExcersises
 
         private bool hasRatedDifferentProducts(User otherUser)
         {
-            return otherUser.ratings.Keys.ToList().Where(x => this.ratings.Keys.Contains(x) == false).ToList().Count > 1;
+            return otherUser.ratings.Keys.ToList().Where(x => this.ratings.Keys.Contains(x) == false).ToList().Count >= 1;
         }
     }
 }
