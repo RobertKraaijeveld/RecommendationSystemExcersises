@@ -18,31 +18,27 @@ namespace RecommendationSystemExcersises
             this.amountOfNeighbours = amountOfNeighbours;
         }
 
-        public List<KeyValuePair<int, double>> getListOfTopPredictedRatings(int recommendationAmount, Dictionary<int, User> sortedUserItems, User subject)
+        public List<KeyValuePair<int, double>> getListOfTopPredictedRatings(int recommendationAmount, int minimumAmountOfReviewsPerUser, Dictionary<int, User> sortedUserItems, User subject)
         {
             var allUniqueProducts = getUniqueProducts(sortedUserItems);
-            var similaritiesAndNearestNeighbours = subject.getNearestNeighboursAndSimilarities(this.amountOfNeighbours, sortedUserItems.Values.ToList(), this.similarityComputer);
+            var nearestNeighboursAndSimilarities = subject.getNearestNeighboursAndSimilarities(this.amountOfNeighbours, sortedUserItems.Values.ToList(), this.similarityComputer);
+
+            Console.WriteLine("NEIGHBOURS: ");
+            nearestNeighboursAndSimilarities.ToList().ForEach(x => Console.WriteLine("Neighbour with id " + x.Key.userId + " with similarity " + x.Value));
+
 
             var allPredictedRatingsPerProduct = new Dictionary<int, double>();
             foreach(var productNo in allUniqueProducts)
             {
-                if(allPredictedRatingsPerProduct.ContainsKey(productNo) == false)
+                if(allPredictedRatingsPerProduct.ContainsKey(productNo) == false) 
+                   //&& isRatedByGivenAmountOfNeighbours(recommendationAmount, productNo, nearestNeighboursAndSimilarities.Keys.ToList()))
                 {
-                    var predictedRatingForCurrProduct = predicter.predictRating(productNo, subject, similaritiesAndNearestNeighbours);
+                    var predictedRatingForCurrProduct = predicter.predictRating(productNo, subject, nearestNeighboursAndSimilarities);
                     allPredictedRatingsPerProduct.Add(productNo, predictedRatingForCurrProduct);
                 }
             }
             return allPredictedRatingsPerProduct.OrderByDescending(key => key.Value).Take(recommendationAmount).OrderByDescending(key => key.Value).ToList();
-            /*
-                o Based on the results you get, do you think it could be better to
-                compute the predicted rating only for movies which were rated by
-                more than one nearest neighbour (i.e., at least two or three)? Why?
-
-                o Modify your algorithm to compute the  predicted ratings
-                considering only products rated by at least 3 neighbours.
-                Execute again the program to create the list of 8 top
-                recommendations for user 186.
-             */
+            
         }
 
         //Inefficient AF
@@ -61,6 +57,12 @@ namespace RecommendationSystemExcersises
                 }
             }
             return allUniqueProducts;
+        }
+
+        //INCORRECT
+        private bool isRatedByGivenAmountOfNeighbours(int amount, int productKey, List<User> neighbours)
+        {
+            return neighbours.Where(x => x.ratings.ContainsKey(productKey)).ToList().Count >= amount;
         }
     }
 }

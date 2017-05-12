@@ -103,10 +103,12 @@ namespace RecommendationSystemExcersises
             ISimilarity pearsonSimilarity = new PearsonSimilarity();
             IRatingPrediction weightedAvgPrediction = new WeightedAveragePrediction();
             
-            RecommendationCreator recommendationCreator = new RecommendationCreator(pearsonSimilarity, weightedAvgPrediction, 5);
+            int neighboursAmount = 20;
+            RecommendationCreator recommendationCreator = new RecommendationCreator(pearsonSimilarity, weightedAvgPrediction, neighboursAmount);
 
             int recommendationAmount = 8;
-            var top8Recommendations = recommendationCreator.getListOfTopPredictedRatings(recommendationAmount, sortedUserItems, user186);
+            int minimumAmountOfNeighbourProductOccurences = 3;
+            var top8Recommendations = recommendationCreator.getListOfTopPredictedRatings(recommendationAmount, minimumAmountOfNeighbourProductOccurences, sortedUserItems, user186);
 
             Console.WriteLine("Top 8 recommendations for user 186: ");
             Console.WriteLine("-------------------------------------");
@@ -115,7 +117,18 @@ namespace RecommendationSystemExcersises
             int counter = 0;
             top8Recommendations.ForEach(x => Console.WriteLine("Top " + (++counter) + " product: Movie no. " + x.Key + ", predicted rating " + x.Value));
 
+
+            /*
+                Q: Based on the results you get, do you think it could be better to
+                compute the predicted rating only for movies which were rated by
+                more than one nearest neighbour (i.e., at least two or three)? Why?
+
+                A: Yes, since doing this will give you a larger, more balanced dataset instead 
+                of potentially using just one users feedback as the basis of the entire prediction.
+             */
         }
+
+
 
 
         /*
