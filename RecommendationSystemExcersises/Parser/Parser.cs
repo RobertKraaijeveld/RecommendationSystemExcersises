@@ -7,12 +7,12 @@ namespace RecommendationSystemExcersises
 {
     class Parser
     {
-        public static Dictionary<int, User> parseUserItems(string fileName, char delimiter)
+        public static Dictionary<int, User> parseUserItems(string fileName, char[] delimiters)
         {
             var allUsers = new Dictionary<int, User>();
 
             var valuesMatrix = File.ReadLines(fileName)
-                               .Select(x => x.Split(delimiter)
+                               .Select(x => x.Split(delimiters)
                                       .Select(Double.Parse)
                                       .ToList())
                                .ToList();
@@ -40,6 +40,7 @@ namespace RecommendationSystemExcersises
                 var ratingsDict = new Dictionary<int, double>() { { articleNo, givenRating } };
                 allUsersSoFar.Add(userId, new User(userId, ratingsDict));
             }
+            
             return allUsersSoFar;
         }
     }

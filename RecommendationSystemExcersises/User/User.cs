@@ -16,65 +16,108 @@ namespace RecommendationSystemExcersises
             this.ratings = ratings;
         }
 
-        public Dictionary<int, Vector> getOverlappingRatingsVectors(User other)
+        //Use option pattern to call appropriate method for an similarity measuring object
+        public Dictionary<int, Vector> getRatingsVectors(User other, bool useSparseData)
         {
-            var overlappingRatings = new Dictionary<int, Vector>();
+            var ratingsVectors = new Dictionary<int, Vector>();
 
-            overlappingRatings[userId] = new Vector();
-            overlappingRatings[other.userId] = new Vector();
-            
-            foreach(int productKey in this.ratings.Keys)
-            {
-                if(other.ratings.ContainsKey(productKey))
-                {
-                    var myRating = ratings[productKey];
-                    var otherUsersRating = other.ratings[productKey];
+            ratingsVectors[this.userId] = new Vector();
+            ratingsVectors[other.userId] = new Vector();
 
-                    overlappingRatings[userId].values.Add(myRating);
-                    overlappingRatings[other.userId].values.Add(otherUsersRating);
-                    
-                }
-            }
-            return overlappingRatings;
+            if (useSparseData)
+                setSparseRatingsVectors(ref ratingsVectors, other);
+            else
+                setNormalRatingsVectors(ref ratingsVectors, other);
+
+            return ratingsVectors;
         }
 
+        private void setSparseRatingsVectors(ref Dictionary<int, Vector> outDict, User otherUser)
+        {
+            var bothUsersRatedProducts = this.ratings.Keys.ToList().Union(otherUser.ratings.Keys.ToList()).ToList();
 
-        //TODO: CHANGE THESE NAMES
-        public Dictionary<double, User> getNearestNeighboursAndSimilarities(int maximumNeighboursAmount, List<User> allUsers, ISimilarity similarityMeasurer)
+            foreach (var productKey in bothUsersRatedProducts)
+            {
+                if (this.ratings.ContainsKey(productKey))
+                {
+                    var myRating = this.ratings[productKey];
+                    outDict[this.userId].values.Add(myRating);
+
+                    if (otherUser.ratings.ContainsKey(productKey))
+                    {
+                        var otherUsersRating = otherUser.ratings[productKey];
+                        outDict[otherUser.userId].values.Add(otherUsersRating);
+                    }
+                    else
+                        outDict[otherUser.userId].values.Add(0.0);
+
+                }
+                else
+                {
+                    outDict[this.userId].values.Add(0.0);
+
+                    var otherUsersRating = otherUser.ratings[productKey];
+                    outDict[otherUser.userId].values.Add(otherUsersRating);
+                }
+            }
+        }
+
+        private void setNormalRatingsVectors(ref Dictionary<int, Vector> outDict, User otherUser)
+        {
+            foreach(int productKey in this.ratings.Keys)
+            {
+                if(otherUser.ratings.ContainsKey(productKey))
+                {
+                    var myRating = ratings[productKey];
+                    var otherUsersRating = otherUser.ratings[productKey];
+
+                    outDict[this.userId].values.Add(myRating);
+                    outDict[otherUser.userId].values.Add(otherUsersRating);
+                }
+            }
+        }
+        
+    
+        public Dictionary<User, double> getNearestNeighboursAndSimilarities(int maximumNeighboursAmount, List<User> allUsers, ISimilarity similarityMeasurer)
         {
             //make parameter?
             var similarityMinimum = 0.35;
 
             //change name
             //not sure if nice
-            var neighboursAndSimilarities = new Dictionary<double, User>();
+            var neighboursAndSimilarities = new Dictionary<User, double>();
 
-            foreach(var currentUser in allUsers)
+            foreach (var currentUser in allUsers)
             {
-                if(currentUser.userId != this.userId)
+                if (currentUser.userId != this.userId)
                 {
-                    var ourOverlappingRatingsVectors = this.getOverlappingRatingsVectors(currentUser);
-                    var myRatingVector = ourOverlappingRatingsVectors[this.userId];
-                    var otherUserRatingVector = ourOverlappingRatingsVectors[currentUser.userId];                    
+                    var ourRatingsVectors = this.getRatingsVectors(currentUser, similarityMeasurer.canHandleSparseData());
+                    var myRatingVector = ourRatingsVectors[this.userId];
+                    var otherUserRatingVector = ourRatingsVectors[currentUser.userId];
 
                     var currentSimilarity = similarityMeasurer.computeSimilarity(myRatingVector, otherUserRatingVector);
 
-                    if(currentSimilarity > similarityMinimum && hasRatedDifferentProducts(currentUser))
+                    if(this.userId == 4)
                     {
-                        if(neighboursAndSimilarities.Count < maximumNeighboursAmount)
+                        Console.WriteLine("User 4s similarity with other user " + currentUser.userId + " is " + currentSimilarity + " with the minimum being " + similarityMinimum);
+                    }
+
+                    if (currentSimilarity > similarityMinimum && hasRatedDifferentProducts(currentUser))
+                    {
+                        if (neighboursAndSimilarities.Count <= maximumNeighboursAmount)
                         {
-                            neighboursAndSimilarities.Add(currentSimilarity, currentUser);
+                            neighboursAndSimilarities.Add(currentUser, currentSimilarity);
                         }
-                        else if(neighboursAndSimilarities.Count == maximumNeighboursAmount)
+                        else if (neighboursAndSimilarities.Count == maximumNeighboursAmount)
                         {
                             var lowestSimilarity = getLowestSimilarity(neighboursAndSimilarities);
-                            var leastSimilarNeighbour = neighboursAndSimilarities[lowestSimilarity];
+                            var leastSimilarNeighbour = neighboursAndSimilarities.Aggregate((l, r) => l.Value < r.Value ? l : r).Key;
 
                             //Ugly extra if
-                            if(currentSimilarity > lowestSimilarity)
+                            if (currentSimilarity > lowestSimilarity)
                             {
-                                neighboursAndSimilarities.Remove(lowestSimilarity);
-                                neighboursAndSimilarities.Add(currentSimilarity, currentUser);
+                                neighboursAndSimilarities.Remove(leastSimilarNeighbour);
+                                neighboursAndSimilarities.Add(currentUser, currentSimilarity);
 
                                 //calling getLowestSimilarity since the neighbours are now updated
                                 similarityMinimum = getLowestSimilarity(neighboursAndSimilarities);
@@ -82,16 +125,21 @@ namespace RecommendationSystemExcersises
                         }
                     }
 
-                    if(neighboursAndSimilarities.Count == maximumNeighboursAmount)
+                    if (neighboursAndSimilarities.Count == maximumNeighboursAmount)
                         similarityMinimum = getLowestSimilarity(neighboursAndSimilarities);
                 }
             }
             return neighboursAndSimilarities;
         }
 
-        private double getLowestSimilarity(Dictionary<double, User> similaritiesAndNeighbours)
+        private bool neighbourAlreadyPresent(Dictionary<double, User> neighboursAndSimilarities, int userId)
         {
-            return similaritiesAndNeighbours.Keys.Min();
+            return neighboursAndSimilarities.Values.Where(x => x.userId == userId).ToList().Count > 1;
+        }
+
+        private double getLowestSimilarity(Dictionary<User, double> similaritiesAndNeighbours)
+        {
+            return similaritiesAndNeighbours.Values.Min();
         }
 
         private bool hasRatedDifferentProducts(User otherUser)

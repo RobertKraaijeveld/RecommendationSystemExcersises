@@ -6,6 +6,8 @@ namespace RecommendationSystemExcersises
 {
     class PearsonSimilarity : ISimilarity
     {
+        public bool canHandleSparseData() { return false; }
+
         public double computeSimilarity(Vector x, Vector y)
         {
             var xyMultiplication = x.dotProduct(y);

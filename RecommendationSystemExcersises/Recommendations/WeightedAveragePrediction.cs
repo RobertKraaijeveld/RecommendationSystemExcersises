@@ -6,19 +6,18 @@ namespace RecommendationSystemExcersises
 {
     class WeightedAveragePrediction : IRatingPrediction
     {
-        //RENAME STUFF
-        public double predictRating(int productKey, User subject, Dictionary<double, User> similaritiesAndNeighbours)
+        public double predictRating(int productKey, User subject, Dictionary<User, double> similaritiesAndNeighbours)
         {
             //filter the dict only on ratings of the productKey.
-            var filteredDict = similaritiesAndNeighbours.Where(x => x.Value.ratings.ContainsKey(productKey)).ToDictionary(x => x.Key, x => x.Value);
+            var filteredDict = similaritiesAndNeighbours.Where(x => x.Key.ratings.ContainsKey(productKey)).ToDictionary(x => x.Key, x => x.Value);
 
-            var totalSimilarityValue = filteredDict.Keys.ToList().Sum();
+            var totalSimilarityValue = filteredDict.Values.ToList().Sum();
 
             //check if these are ordered correctly
-            var similaritiesAsPercentages = filteredDict.Keys.Select(x => (x / totalSimilarityValue)).ToList();
+            var similaritiesAsPercentages = filteredDict.Values.Select(x => (x / totalSimilarityValue)).ToList();
 
             var finalPrediction = 0.0;
-            var usersList = filteredDict.Values.ToList();
+            var usersList = filteredDict.Keys.ToList();
             for(int i = 0; i < usersList.Count; i++)
             {
                 if(usersList[i].ratings.ContainsKey(productKey))

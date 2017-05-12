@@ -6,6 +6,8 @@ namespace RecommendationSystemExcersises
 {
     class EuclideanSimilarity : ISimilarity
     {
+        public bool canHandleSparseData() { return false; }
+
         public double computeSimilarity(Vector x, Vector y)
         {
             double euclideanDistance = 0.0f;
