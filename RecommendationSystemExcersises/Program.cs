@@ -103,33 +103,47 @@ namespace RecommendationSystemExcersises
             ISimilarity pearsonSimilarity = new PearsonSimilarity();
             IRatingPrediction weightedAvgPrediction = new WeightedAveragePrediction();
             
-            int neighboursAmount = 20;
+            int neighboursAmount = 10;
             RecommendationCreator recommendationCreator = new RecommendationCreator(pearsonSimilarity, weightedAvgPrediction, neighboursAmount);
 
             int recommendationAmount = 8;
-            int minimumAmountOfNeighbourProductOccurences = 3;
+            int minimumAmountOfNeighbourProductOccurences = 0;
             var top8Recommendations = recommendationCreator.getListOfTopPredictedRatings(recommendationAmount, minimumAmountOfNeighbourProductOccurences, sortedUserItems, user186);
-
-            Console.WriteLine("Top 8 recommendations for user 186: ");
+            
+            Console.WriteLine("");            
+            Console.WriteLine("Top 8 recommendations for user 186 with 10 neighbours and minimumAmountOfNeighbourProductOccurences = 0: ");
             Console.WriteLine("-------------------------------------");
             Console.WriteLine("");            
 
             int counter = 0;
             top8Recommendations.ForEach(x => Console.WriteLine("Top " + (++counter) + " product: Movie no. " + x.Key + ", predicted rating " + x.Value));
+            Console.WriteLine("");            
 
 
+            //ENFORCING THAT A PRODUCT HAS TO BE RATED BY >= 3 NEIGHBOURS  
             /*
                 Q: Based on the results you get, do you think it could be better to
                 compute the predicted rating only for movies which were rated by
                 more than one nearest neighbour (i.e., at least two or three)? Why?
 
-                A: Yes, since doing this will give you a larger, more balanced dataset instead 
-                of potentially using just one users feedback as the basis of the entire prediction.
+                A: Yes, since this will create better performance; we don't do prediction
+                computation unless a product is rated by enough neighbours.
+
              */
+
+            recommendationAmount = 8;
+            minimumAmountOfNeighbourProductOccurences = 3;
+            top8Recommendations = recommendationCreator.getListOfTopPredictedRatings(recommendationAmount, minimumAmountOfNeighbourProductOccurences, sortedUserItems, user186);
+
+            Console.WriteLine("");                         
+            Console.WriteLine("Top 8 recommendations for user 186 with "+neighboursAmount+" neighbours and minimumAmountOfNeighbourProductOccurences = 3: ");
+            Console.WriteLine("-------------------------------------");
+            Console.WriteLine("");            
+
+            counter = 0;
+            top8Recommendations.ForEach(x => Console.WriteLine("Top " + (++counter) + " product: Movie no. " + x.Key + ", predicted rating " + x.Value));
+            
         }
-
-
-
 
         /*
         HELPERS

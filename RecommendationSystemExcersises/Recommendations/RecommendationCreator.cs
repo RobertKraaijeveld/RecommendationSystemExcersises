@@ -18,25 +18,23 @@ namespace RecommendationSystemExcersises
             this.amountOfNeighbours = amountOfNeighbours;
         }
 
-        public List<KeyValuePair<int, double>> getListOfTopPredictedRatings(int recommendationAmount, int minimumAmountOfReviewsPerUser, Dictionary<int, User> sortedUserItems, User subject)
+        public List<KeyValuePair<int, double>> getListOfTopPredictedRatings(int recommendationAmount, int minimumNeighboursThatRatedProductAmount, Dictionary<int, User> sortedUserItems, User subject)
         {
             var allUniqueProducts = getUniqueProducts(sortedUserItems);
             var nearestNeighboursAndSimilarities = subject.getNearestNeighboursAndSimilarities(this.amountOfNeighbours, sortedUserItems.Values.ToList(), this.similarityComputer);
 
-            Console.WriteLine("NEIGHBOURS: ");
-            nearestNeighboursAndSimilarities.ToList().ForEach(x => Console.WriteLine("Neighbour with id " + x.Key.userId + " with similarity " + x.Value));
-
-
             var allPredictedRatingsPerProduct = new Dictionary<int, double>();
             foreach(var productNo in allUniqueProducts)
             {
-                if(allPredictedRatingsPerProduct.ContainsKey(productNo) == false) 
-                   //&& isRatedByGivenAmountOfNeighbours(recommendationAmount, productNo, nearestNeighboursAndSimilarities.Keys.ToList()))
+                if(amountOfNeighboursThatRatedProduct(productNo, nearestNeighboursAndSimilarities.Keys.ToList()) >= minimumNeighboursThatRatedProductAmount)
                 {
                     var predictedRatingForCurrProduct = predicter.predictRating(productNo, subject, nearestNeighboursAndSimilarities);
                     allPredictedRatingsPerProduct.Add(productNo, predictedRatingForCurrProduct);
                 }
             }
+            //Doing this just to see how much predictRating calls filtering on amountOfNeighboursThatRatedProduct saves us:
+            Console.WriteLine("Computed " + allPredictedRatingsPerProduct.Count + " ratings predictions with minimum amount of neighbours to have rated a product being " + minimumNeighboursThatRatedProductAmount);
+            
             return allPredictedRatingsPerProduct.OrderByDescending(key => key.Value).Take(recommendationAmount).OrderByDescending(key => key.Value).ToList();
             
         }
@@ -59,10 +57,9 @@ namespace RecommendationSystemExcersises
             return allUniqueProducts;
         }
 
-        //INCORRECT
-        private bool isRatedByGivenAmountOfNeighbours(int amount, int productKey, List<User> neighbours)
+        private int amountOfNeighboursThatRatedProduct(int productKey, List<User> neighbours)
         {
-            return neighbours.Where(x => x.ratings.ContainsKey(productKey)).ToList().Count >= amount;
+            return neighbours.Where(x => x.ratings.ContainsKey(productKey)).ToList().Count;
         }
     }
 }
