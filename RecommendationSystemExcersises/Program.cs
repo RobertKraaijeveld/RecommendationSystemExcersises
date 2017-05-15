@@ -8,24 +8,32 @@ namespace RecommendationSystemExcersises
     {
         static void Main(string[] args)
         {
+            var allUsers = getParsedAndSortedUserItems("docs/userItem.data", new char[1] { ',' });
+            
             Console.WriteLine("RUNNING SIMILARITY MEASURE DIAGNOSTIC");
             Console.WriteLine("-------------------------------------");
-            similarityMeasuresDiagnostic();
+            similarityMeasuresDiagnostic(allUsers);
+
+            Console.WriteLine("");
+            Console.WriteLine("RUNNING NEAREST NEIGHBOURS CHECK USING ALL 3 MEASURES");
+            Console.WriteLine("-------------------------------------");
+            showNeighboursAndSimilaritiesOfUserSeven(allUsers);
 
             Console.WriteLine("");
             Console.WriteLine("RUNNING SINGLE RATING PREDICTION DIAGNOSTIC");
             Console.WriteLine("-------------------------------------");
-            singlePredictionDiagnostic();
+            singlePredictionDiagnostic(allUsers);
 
             Console.WriteLine("");
             Console.WriteLine("RUNNING MULTIPLE RECOMMENDATIONS ON MOVIE100K DATA DIAGNOSTIC");
             Console.WriteLine("-------------------------------------");
-            nDimensionalRecommendationDiagnostic();
+
+            var sortedUserItems = getParsedAndSortedUserItems("docs/u.data", new char[2] { ' ', '\t' });            
+            nDimensionalRecommendationDiagnostic(sortedUserItems);
         }
 
-        private static void similarityMeasuresDiagnostic()
+        private static void similarityMeasuresDiagnostic(Dictionary<int, User> allUsers)
         {
-            var allUsers = getParsedAndSortedUserItems("docs/userItem.data", new char[1] { ',' });
             ISimilarity similarityMeasurer = new PearsonSimilarity();
 
             var testUser1 = allUsers[1];
@@ -43,10 +51,41 @@ namespace RecommendationSystemExcersises
                                + similarityMeasurer.computeSimilarity(testUser1Vector , testUser3Vector));
         }
 
-        private static void singlePredictionDiagnostic()
+
+        private static void outputNeighbours(Dictionary<User, double> neighboursAndSimilarities)
         {
-            var allUsers = getParsedAndSortedUserItems("docs/userItem.data", new char[1] { ',' });
+            neighboursAndSimilarities.ToList().ForEach(kv => Console.WriteLine("Neighbour with user no. " + kv.Key.userId + " has similarity " + kv.Value));                                                
+        }
+        private static void showNeighboursAndSimilaritiesOfUserSeven(Dictionary<int, User> allUsers)
+        {
+            var userSeven = allUsers[7];
+
+            ISimilarity similarityMeasure = new EuclideanSimilarity();
+            var userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
             
+            Console.WriteLine("");
+            Console.WriteLine("Neighbours and similarities using EUCLIDEAN: ");
+            outputNeighbours(userSevenNeighboursAndSimilarities);
+            
+
+            similarityMeasure = new PearsonSimilarity();
+            userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
+            
+            Console.WriteLine("");
+            Console.WriteLine("Neighbours and similarities using PEARSON: ");
+            outputNeighbours(userSevenNeighboursAndSimilarities);
+            
+
+            similarityMeasure = new CosineSimilarity();
+            userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
+            
+            Console.WriteLine("");
+            Console.WriteLine("Neighbours and similarities using COSINE: ");
+            outputNeighbours(userSevenNeighboursAndSimilarities);
+        }
+
+        private static void singlePredictionDiagnostic(Dictionary<int, User> allUsers)
+        {
             var userSeven = allUsers[7];
 
             ISimilarity similarityMeasure = new PearsonSimilarity();
@@ -94,10 +133,8 @@ namespace RecommendationSystemExcersises
 
         }
 
-        private static void nDimensionalRecommendationDiagnostic()
+        private static void nDimensionalRecommendationDiagnostic(Dictionary<int, User> sortedUserItems)
         {
-            var sortedUserItems = getParsedAndSortedUserItems("docs/u.data", new char[2] { ' ', '\t' });
-
             var user186 = sortedUserItems[186];
 
             ISimilarity pearsonSimilarity = new PearsonSimilarity();

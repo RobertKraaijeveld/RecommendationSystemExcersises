@@ -16,7 +16,6 @@ namespace RecommendationSystemExcersises
             this.ratings = ratings;
         }
 
-        //Use option pattern to call appropriate method for an similarity measuring object
         public Dictionary<int, Vector> getRatingsVectors(User other, bool useSparseData)
         {
             var ratingsVectors = new Dictionary<int, Vector>();
@@ -77,14 +76,10 @@ namespace RecommendationSystemExcersises
             }
         }
 
-
         public Dictionary<User, double> getNearestNeighboursAndSimilarities(int maximumNeighboursAmount, List<User> allUsers, ISimilarity similarityMeasurer)
         {
-            //make parameter?
             var similarityMinimum = 0.35;
 
-            //change name
-            //not sure if nice
             var neighboursAndSimilarities = new Dictionary<User, double>();
 
             foreach (var currentUser in allUsers)
