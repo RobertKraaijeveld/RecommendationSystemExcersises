@@ -21,6 +21,8 @@ namespace RecommendationSystemExcersises
         public List<KeyValuePair<int, double>> getListOfTopPredictedRatings(int recommendationAmount, int minimumNeighboursThatRatedProductAmount, Dictionary<int, User> sortedUserItems, User subject)
         {
             var allUniqueProducts = getUniqueProducts(sortedUserItems);
+            allUniqueProducts = allUniqueProducts.Where(x => !subject.ratings.ContainsKey(x)).ToList();
+            
             var nearestNeighboursAndSimilarities = subject.getNearestNeighboursAndSimilarities(this.amountOfNeighbours, sortedUserItems.Values.ToList(), this.similarityComputer);
 
             var allPredictedRatingsPerProduct = new Dictionary<int, double>();
@@ -28,7 +30,7 @@ namespace RecommendationSystemExcersises
             {
                 if(amountOfNeighboursThatRatedProduct(productNo, nearestNeighboursAndSimilarities.Keys.ToList()) >= minimumNeighboursThatRatedProductAmount)
                 {
-                    var predictedRatingForCurrProduct = predicter.predictRating(productNo, subject, nearestNeighboursAndSimilarities);
+                    var predictedRatingForCurrProduct = predicter.predictRating(productNo, nearestNeighboursAndSimilarities);
                     allPredictedRatingsPerProduct.Add(productNo, predictedRatingForCurrProduct);
                 }
             }

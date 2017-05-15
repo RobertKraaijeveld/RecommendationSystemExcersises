@@ -96,10 +96,7 @@ namespace RecommendationSystemExcersises
                     var otherUserRatingVector = ourRatingsVectors[currentUser.userId];
 
                     var currentSimilarity = similarityMeasurer.computeSimilarity(myRatingVector, otherUserRatingVector);
-
-
-
-
+                    
                     if (currentSimilarity > similarityMinimum && hasRatedDifferentProducts(currentUser))
                     {
                         if (neighboursAndSimilarities.Count < maximumNeighboursAmount)

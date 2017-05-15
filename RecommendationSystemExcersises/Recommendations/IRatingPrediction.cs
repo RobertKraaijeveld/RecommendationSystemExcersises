@@ -5,6 +5,6 @@ namespace RecommendationSystemExcersises
 {
     interface IRatingPrediction
     {
-        double predictRating(int productKey, User subject, Dictionary<User, double> similaritiesAndNeighbours);
+        double predictRating(int productKey, Dictionary<User, double> similaritiesAndNeighbours);
     }
 }

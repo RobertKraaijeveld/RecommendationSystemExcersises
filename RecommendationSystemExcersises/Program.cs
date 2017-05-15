@@ -56,11 +56,11 @@ namespace RecommendationSystemExcersises
             Console.WriteLine("");            
             IRatingPrediction weightedAvgPrediction = new WeightedAveragePrediction();
             Console.WriteLine("User no. 7 predicted rating of product no. 101  using pearson is "
-                               + weightedAvgPrediction.predictRating(101, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(101, userSevenNeighboursAndSimilarities));
             Console.WriteLine("User no. 7 predicted rating of product no. 103 using pearson is "
-                               + weightedAvgPrediction.predictRating(103, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(103, userSevenNeighboursAndSimilarities));
             Console.WriteLine("User no. 7 predicted rating of product no. 106 using pearson is "
-                               + weightedAvgPrediction.predictRating(106, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(106, userSevenNeighboursAndSimilarities));
 
             //INCORRECT, CHECK THIS ONE
             var userFour = allUsers[4];
@@ -68,7 +68,7 @@ namespace RecommendationSystemExcersises
 
             Console.WriteLine("");
             Console.WriteLine("User no. 4 predicted rating of product no. 101 using pearson is "
-                               + weightedAvgPrediction.predictRating(101, userFour, userFourNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(101, userFourNeighboursAndSimilarities));
 
 
             Console.WriteLine("");
@@ -77,9 +77,9 @@ namespace RecommendationSystemExcersises
             userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
 
             Console.WriteLine("User no. 7 predicted rating of product no. 101, with rating of product no. 106 set to 2.8 using pearson is "
-                               + weightedAvgPrediction.predictRating(101, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(101, userSevenNeighboursAndSimilarities));
             Console.WriteLine("User no. 7 predicted rating of product no. 103, with rating of product no. 106 set to 2.8 using pearson is "
-                               + weightedAvgPrediction.predictRating(103, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(103, userSevenNeighboursAndSimilarities));
 
 
             Console.WriteLine("");
@@ -88,9 +88,9 @@ namespace RecommendationSystemExcersises
             userSevenNeighboursAndSimilarities = userSeven.getNearestNeighboursAndSimilarities(3, allUsers.Values.ToList(), similarityMeasure);
 
             Console.WriteLine("User no. 7 predicted rating of product no. 101, with rating of product no. 106 updated to 5 using pearson is "
-                               + weightedAvgPrediction.predictRating(101, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(101, userSevenNeighboursAndSimilarities));
             Console.WriteLine("User no. 7 predicted rating of product no. 103, with rating of product no. 106 updated to 5 using pearson is "
-                               + weightedAvgPrediction.predictRating(103, userSeven, userSevenNeighboursAndSimilarities));
+                               + weightedAvgPrediction.predictRating(103, userSevenNeighboursAndSimilarities));
 
         }
 

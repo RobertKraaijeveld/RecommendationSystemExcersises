@@ -6,23 +6,28 @@ namespace RecommendationSystemExcersises
 {
     class WeightedAveragePrediction : IRatingPrediction
     {
-        public double predictRating(int productKey, User subject, Dictionary<User, double> similaritiesAndNeighbours)
+        public double predictRating(int productKey, Dictionary<User, double> similaritiesAndNeighbours)
         {
-            var totalSimilarityValue = similaritiesAndNeighbours.Values.ToList().Sum();
+            var totalSimilarityValue = 0.0;
 
             //check if these are ordered correctly
             var similaritiesAsPercentages = similaritiesAndNeighbours.Values.Select(x => (x / totalSimilarityValue)).ToList();
 
             var finalPrediction = 0.0;
-            var usersList = similaritiesAndNeighbours.Keys.ToList();
-            for(int i = 0; i < usersList.Count; i++)
+            var neighboursAndSimilaritiesList = similaritiesAndNeighbours.ToList();
+
+            for (int i = 0; i < neighboursAndSimilaritiesList.Count; i++)
             {
-                if(usersList[i].ratings.ContainsKey(productKey))
+                if (neighboursAndSimilaritiesList[i].Key.ratings.ContainsKey(productKey))
                 {
-                    var currentNeighbourProductRating = usersList[i].ratings[productKey];
-                    finalPrediction += similaritiesAsPercentages[i] * currentNeighbourProductRating;
+                    var currentNeighbourProductRating = neighboursAndSimilaritiesList[i].Key.ratings[productKey];
+                    var currentNeighbourSimilarity = neighboursAndSimilaritiesList[i].Value;
+
+                    finalPrediction += currentNeighbourProductRating * currentNeighbourSimilarity;
+                    totalSimilarityValue += currentNeighbourSimilarity;
                 }
             }
+            finalPrediction = finalPrediction / totalSimilarityValue;
             return finalPrediction;
         }
     }
