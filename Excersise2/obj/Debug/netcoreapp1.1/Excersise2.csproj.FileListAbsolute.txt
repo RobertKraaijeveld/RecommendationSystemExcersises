@@ -1,0 +1,8 @@
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\bin\Debug\netcoreapp1.1\Excersise2.deps.json
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\bin\Debug\netcoreapp1.1\Excersise2.runtimeconfig.json
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\bin\Debug\netcoreapp1.1\Excersise2.runtimeconfig.dev.json
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\bin\Debug\netcoreapp1.1\Excersise2.dll
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\bin\Debug\netcoreapp1.1\Excersise2.pdb
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\obj\Debug\netcoreapp1.1\Excersise2.AssemblyInfo.cs
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\obj\Debug\netcoreapp1.1\Excersise2.dll
+E:\Hogeschool\recommendationsystemexcersises\Excersise2\obj\Debug\netcoreapp1.1\Excersise2.pdb
