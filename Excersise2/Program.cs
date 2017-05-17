@@ -31,6 +31,9 @@ namespace Excersise2
                     Console.WriteLine("Item " + currItemId + " has deviation of " + otherItem.Value + " with other item " + otherItem.Key);
                 }
             }
+
+            var predictionTest = computePrediction(allUsers[2], allItems[102], allItems);
+            Console.WriteLine("Predicted rating of user 2 for product 102: " + predictionTest);
         }
 
         //Works:)       
@@ -68,8 +71,6 @@ namespace Excersise2
             return usersThatRatedBothItems;
         }
 
-        //Check if rated both 
-        //Check if can be inverted
         private static double computeDeviation(int firstItemId, int secondItemId, List<User> allUsersThatRatedBoth)
         {
             double deviation = 0.0; 
@@ -79,9 +80,6 @@ namespace Excersise2
             }
             return deviation / allUsersThatRatedBoth.Count;
         }
-
-        private static void updateDeviation(ref Dictionary<int, Item> deviations, int productId, double newRating)
-        {}
 
         private static double computePrediction(User subject, Item itemToBePredicted, Dictionary<int, Item> allItems)
         {
