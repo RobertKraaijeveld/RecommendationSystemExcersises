@@ -8,16 +8,6 @@ namespace Excersise2
     {
         static void Main(string[] args)
         {
-            /*Compute devitations between all items;
-            
-            - AB needs to be computed, BA is just the inverse of AB.
-            -Meaning that if A is already in the dictionary of deviations, Bs deviation to A is simply As deviation to B * -1.
-
-            THIS CAN ALL BE CACHED! Only needs to be updated when new items are added, and even then you only need to do the new one and all the other ones (1 * N) instead of N^2.
-            */
-
-            //Increment usersCounter per item when we come across a rating of it during parsing.
-            //This is correct since an items cardinality is just the amount of users that rated an item.
             var parser = new Parser("docs/ratings.csv", new char[1]{','});
             var allUsers = parser.getParsedUsers();
             var allItems = parser.getParsedItemsWithAmountOfTimesRated();
@@ -36,7 +26,6 @@ namespace Excersise2
             Console.WriteLine("Predicted rating of user 2 for product 102: " + predictionTest);
         }
 
-        //Works:)       
         private static void computeAllDeviations(ref Dictionary<int, Item> allItems, List<User> allUsers)
         {
             foreach (var itemKV in allItems)
