@@ -4,55 +4,128 @@ using System.Collections.Generic;
 
 namespace Excersise2
 {
+    /*
+    Given a dataset of ratings, implement the computation of the deviations
+    between all pairs of items and store them in a specific data structure.
+    Note: given two items, remember to store (together with their deviation
+    value) also the number of persons which rated both items. This way,
+    updating deviations will be easier and quicker. DONE
+
+    Given a user and an item, implement the computation of the predicted
+    rating of such item for that user. DONE
+
+    Apply the algorithm to the small dataset already used in Part 1
+    (userItem.data) and compute the predicted ratings for user 7 (items 101,
+    103, 106) and for user 3 (items 103, 105).
+
+    Given a new item rating (user-id, item-id, rating), implement the execution
+    of the needed updates to the deviations between items. Think about which
+    deviations you need to update: all of them or only a subset?
+
+    Suppose that user 3 rates item 105 with 4.0. Update the deviations and
+    compute again the predicted ratings for user 7. Which of the three
+    predicted ratings (items 101, 103, 106) change and which stay the same?
+    Explain why that happens.
+    Given a user, implement the computation of the set of 𝑛 top
+    recommendations for him/her.
+
+    Apply the algorithm to the MovieLens dataset 100K and compute the 5 top
+    recommendations for user 186 and display their predicted rating.
+    How much time does it take to create a recommendation for a user
+    (excluding the computation of the deviations)?
+     */
     class Program
     {
+        private static Dictionary<int, User> allUsers;
+        private static Dictionary<int, Item> allItems;        
+
         static void Main(string[] args)
         {
-            var parser = new Parser("docs/ratings.csv", new char[1]{','});
-            var allUsers = parser.getParsedUsers();
-            var allItems = parser.getParsedItemsWithAmountOfTimesRated();
-            
-            computeAllDeviations(ref allItems, allUsers.Values.ToList());
-            foreach (var item in allItems)
-            {
-                var currItemId = item.Key;
-                foreach (var otherItem in item.Value.deviations)
-                {
-                    Console.WriteLine("Item " + currItemId + " has deviation of " + otherItem.Value + " with other item " + otherItem.Key);
-                }
-            }
+            var parser = new Parser("docs/userItem.data", new char[1]{','});
 
-            var predictionTest = computePrediction(allUsers[2], allItems[102], allItems);
-            Console.WriteLine("Predicted rating of user 2 for product 102: " + predictionTest);
+            allUsers = parser.getParsedUsers();
+            allItems = parser.getParsedItemsWithAmountOfTimesRated();
+            computeAllDeviations();
+
+            var user7 = allUsers[7];
+            var user7sPredictions = computeMultiplePredictions(user7, new List<int>(){101, 103, 106});
+
+            var user3 = allUsers[3];
+            var user3sPredictions = computeMultiplePredictions(user7, new List<int>(){103, 105});
+
+            Console.WriteLine("User 7 predictions: ");
+            user7sPredictions.ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));
+
+            Console.WriteLine("");
+            Console.WriteLine("User 3 predictions: ");
+            user3sPredictions.ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));
+
+            Console.WriteLine("");
+            Console.WriteLine("Updating users 3 rating for item 105 to 4.0: ");
+            updateRatingAndDeviations(user3, 105, 4.0);
         }
 
-        private static void computeAllDeviations(ref Dictionary<int, Item> allItems, List<User> allUsers)
+        //on update alleen dat item zn row en column.
+
+
+        /*
+            DEVIATION COMPUTATION
+        */
+        
+        //lot of params bruh
+        private static Dictionary<int, Item> updateRatingAndDeviations(User user, int updatedItemId, double newRating)
+        {
+            user.ratings[updatedItemId] = newRating;
+            var itemObjectForId = allItems[updatedItemId];
+
+            //computing the new deviations of updatedItemId to all other items            
+            foreach(var otherItemDeviation in itemObjectForId.deviations)
+            {
+                var otherItemId = otherItemDeviation.Key;
+
+                var usersWhoRatedBoth = getListOfUsersThatRatedBoth(updatedItemId, otherItemId);
+
+                var newDeviationOfUpdatedItemToOtherItem = computeDeviation(updatedItemId, otherItemId, usersWhoRatedBoth);
+                var newDeviationOfOtherItemToUpdatedItem = computeDeviation(otherItemId, updatedItemId, usersWhoRatedBoth);
+
+                Console.WriteLine("Item " + updatedItemId + " gets new deviation " + newDeviationOfUpdatedItemToOtherItem + " with other item " + otherItemId);
+                Console.WriteLine("OTHER Item " + otherItemId + " gets new deviation " + newDeviationOfOtherItemToUpdatedItem + " with other item " + updatedItemId);                
+            }
+
+
+            //computeDeviation(int firstItemId, int secondItemId, List<User> allUsersThatRatedBoth)
+            return allItems;       
+        }
+
+        private static void computeAllDeviations()
         {
             foreach (var itemKV in allItems)
             {
                 var firstItemId = itemKV.Key;
 	
-                //WHAT TO DO WHEN THERES NO USERS THAT RATED BOTH?
                 foreach (var otherItemKV in allItems)
                 {
                     var secondItemId = otherItemKV.Key;
+
+                    //saving a computation
                     if(firstItemId == secondItemId)
                     {
                         itemKV.Value.deviations[secondItemId] = 0;
                     }
                     else
                     {
-                        var usersThatRatedBoth = getListOfUsersThatRatedBoth(firstItemId, secondItemId, allUsers);
+                        var usersThatRatedBoth = getListOfUsersThatRatedBoth(firstItemId, secondItemId);
                         itemKV.Value.deviations[secondItemId] = computeDeviation(firstItemId, secondItemId, usersThatRatedBoth);
                     }
                 }
             }
         }
 
-        private static List<User> getListOfUsersThatRatedBoth(int firstItemId, int secondItemId, List<User> allUsers)
+        //This method and the one above only get used right at the beginning.
+        private static List<User> getListOfUsersThatRatedBoth(int firstItemId, int secondItemId)
         {
             var usersThatRatedBothItems = new List<User>();
-            foreach (var user in allUsers)
+            foreach (var user in allUsers.Values)
             {
                 if(user.ratings.ContainsKey(firstItemId) && user.ratings.ContainsKey(secondItemId))
                     usersThatRatedBothItems.Add(user);
@@ -67,10 +140,30 @@ namespace Excersise2
             {
                 deviation += (user.ratings[firstItemId] - user.ratings[secondItemId]);
             }
-            return deviation / allUsersThatRatedBoth.Count;
+            return deviation / allUsersThatRatedBoth.Count; 
         }
 
-        private static double computePrediction(User subject, Item itemToBePredicted, Dictionary<int, Item> allItems)
+
+
+        /*
+            PREDICTION COMPUTATION
+        */
+
+        private static List<Tuple<int, double>> computeMultiplePredictions(User subject, List<int> itemsIdsToBePredicted)
+        {
+            var productRatingPredictions = new List<Tuple<int, double>>();
+
+            foreach (var itemId in itemsIdsToBePredicted)
+            {
+                var item = allItems[itemId];
+                var predictionForThisItem = computePrediction(subject, item);
+
+                productRatingPredictions.Add(new Tuple<int, double>(itemId, predictionForThisItem));
+            }
+            return productRatingPredictions;
+        }
+
+        private static double computePrediction(User subject, Item itemToBePredicted)
         {
             int totalCardinality = 0;            
 
