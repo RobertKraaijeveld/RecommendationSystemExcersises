@@ -7,6 +7,5 @@ namespace Excersise2
     {   
         public int amountOfTimesRated;
         public Dictionary<int, double> deviations = new Dictionary<int, double>();
-
     }
 }
