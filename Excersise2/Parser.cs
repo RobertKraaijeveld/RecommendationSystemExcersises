@@ -9,7 +9,7 @@ namespace Excersise2
     {
         string fileName;
         char[] delimiters;
-        List<List<Double>> allValuesMatrix;
+        List<List<float>> allValuesMatrix;
 
 
         public Parser(string fileName, char[] delimiters)
@@ -21,12 +21,12 @@ namespace Excersise2
             allValuesMatrix = parseAllValuesToMatrix();
         }
 
-        private List<List<Double>>  parseAllValuesToMatrix()
+        private List<List<float>>  parseAllValuesToMatrix()
         {
             var valuesMatrix = File.ReadLines(this.fileName)
-                               .Skip(1)
+                               //.Skip(1)
                                .Select(x => x.Split(this.delimiters)
-                                      .Select(Double.Parse)
+                                      .Select(float.Parse)
                                       .ToList())
                                .ToList();
             return valuesMatrix;
@@ -40,7 +40,7 @@ namespace Excersise2
             {
                 int userId = (int) lineValues[0];
                 int articleNo = (int) lineValues[1];
-                double givenRating = lineValues[2];
+                float givenRating = lineValues[2];
 
                 if (allUsers.ContainsKey(userId))
                 {
@@ -48,7 +48,7 @@ namespace Excersise2
                 }
                 else
                 {
-                    var ratingsDict = new Dictionary<int, double>() { { articleNo, givenRating } };
+                    var ratingsDict = new Dictionary<int, float>() { { articleNo, givenRating } };
                     allUsers.Add(userId, new User(userId, ratingsDict));
                 }
             }
@@ -63,6 +63,7 @@ namespace Excersise2
             {
                 //duplication with getParsedUsers
                 int articleNo = (int) lineValues[1];
+
                 if(!allItems.ContainsKey(articleNo))
                 {
                     allItems[articleNo] = new Item();

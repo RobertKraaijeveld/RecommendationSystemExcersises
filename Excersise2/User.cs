@@ -6,9 +6,9 @@ namespace Excersise2
     class User  
     {   
         public int id;
-        public Dictionary<int, double> ratings;
+        public Dictionary<int, float> ratings;
 
-        public User(int id, Dictionary<int, double> ratings)
+        public User(int id, Dictionary<int, float> ratings)
         {
             this.id = id;
             this.ratings = ratings;

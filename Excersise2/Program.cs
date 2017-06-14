@@ -35,6 +35,7 @@ namespace Excersise2
     How much time does it take to create a recommendation for a user
     (excluding the computation of the deviations)?
      */
+
     class Program
     {
         static Dictionary<int, User> allUsers;
@@ -50,6 +51,11 @@ namespace Excersise2
             usersWhoRatedItem = Utilities.getUsersWhoRatedItems(allUsers, allItems);
 
             computeAllDeviations();
+            Console.WriteLine("Item 101 has dev " + allItems[101].deviations[102] + " with 102, " 
+                              + allItems[101].deviations[104] + " with 104, " 
+                              + allItems[101].deviations[105] + " with 105");
+
+
 
             var user7 = allUsers[7];
             var user7sPredictions = computeMultiplePredictions(user7, new List<int>() { 101, 103, 106 });
@@ -57,6 +63,7 @@ namespace Excersise2
             var user3 = allUsers[3];
             var user3sPredictions = computeMultiplePredictions(user3, new List<int>() { 103, 105 });
 
+            
             Console.WriteLine("User 7 predictions: ");
             user7sPredictions.ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));
 
@@ -67,20 +74,20 @@ namespace Excersise2
 
             Console.WriteLine("");
             Console.WriteLine("Updating users 3 rating for item 105 to 4.0...");
-            setRating(3, 105, 4.0);      
+            setRating(3, 105, 4.0f);      
             allItems = updateDeviations(105);
            
             Console.WriteLine("");            
             Console.WriteLine("NEW User 7 predictions: ");
             user7sPredictions = computeMultiplePredictions(user7, new List<int>() { 101, 103, 106 });
             user7sPredictions.ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));
-
-
+            
+            /*
 
             Console.WriteLine("");
             Console.WriteLine("IMPORTING MOVIE100K DATA");
             Console.WriteLine("");
-
+            
             parser = new Parser("docs/u.data", new char[1] { '	' });
 
             allUsers = parser.getParsedUsers();
@@ -89,6 +96,7 @@ namespace Excersise2
 
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
+             
 
             computeAllDeviations();
 
@@ -96,16 +104,12 @@ namespace Excersise2
             Console.WriteLine("Deviation creation time: " + stopWatch.ElapsedMilliseconds / 1000 + "s");
 
 
-            stopWatch = new Stopwatch();
-            stopWatch.Start();
-
             var user186 = allUsers[186];
-            var user186TopPredictions = computeMultiplePredictions(user186, allItems.Keys.ToList());
+            var user186sPrediction = computePrediction(user186, allItems[1599]);
+            Console.WriteLine("user186sPrediction = " + user186sPrediction);
 
-            stopWatch.Stop();
-
-            Console.WriteLine("Recommendation creation time: " + stopWatch.ElapsedMilliseconds + "ms");
-
+            //var user186TopPredictions = computeMultiplePredictions(user186, allItems.Keys.ToList());
+            /*
             Console.WriteLine("");
             Console.WriteLine("NEW User 186 predictions: ");
 
@@ -113,7 +117,7 @@ namespace Excersise2
                         .OrderByDescending(x => x.Item2)
                         .Take(5)
                         .ToList()
-                        .ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));
+                        .ForEach(kv => Console.WriteLine("Item no. " + kv.Item1 + " predicted rating: " + kv.Item2));*/
         }
 
 
@@ -121,7 +125,7 @@ namespace Excersise2
         /*
             DEVIATION COMPUTATION
         */
-        private static void setRating(int userId, int itemId, double newRating)
+        private static void setRating(int userId, int itemId, float newRating)
         {
             allUsers[userId].ratings[itemId] = newRating;
             allItems[itemId].amountOfTimesRated = allItems[itemId].amountOfTimesRated + 1;
@@ -156,22 +160,27 @@ namespace Excersise2
 
         private static void computeAllDeviations()
         {
+                        Console.WriteLine("Allitems 102 " + allItems[102]);
+
             foreach (var itemKV in allItems)
             {
                 var firstItemId = itemKV.Key;
+                Console.WriteLine("firstItemId = " + firstItemId);
 
                 foreach (var otherItemKV in allItems)
                 {
                     var secondItemId = otherItemKV.Key;
+                    Console.WriteLine("secondItemId = " + secondItemId);
 
                     if (firstItemId == secondItemId)
                     {
+                        itemKV.Value.deviations[firstItemId] = 0;                        
                         itemKV.Value.deviations[secondItemId] = 0;
                     }
                     else if (otherItemKV.Value.deviations.ContainsKey(firstItemId))
                     {
                         var otherItemsDeviationWithCurrentItem = otherItemKV.Value.deviations[firstItemId];
-                        itemKV.Value.deviations[secondItemId] = otherItemsDeviationWithCurrentItem * -1;
+                        itemKV.Value.deviations[secondItemId] = -otherItemsDeviationWithCurrentItem;
                     }
                     else
                     {
@@ -186,12 +195,15 @@ namespace Excersise2
         {
             var usersThatRatedBothItems = new List<User>();
 
-            //new so we dont change the static var
-
-            //Check THIS out
-               
             var usersWhoRatedFirstItem = new HashSet<int>(usersWhoRatedItem[firstItemId]);
             var usersWhoRatedSecondItem = new HashSet<int>(usersWhoRatedItem[secondItemId]);
+
+            if(firstItemId == 101 && secondItemId == 102)
+            {
+                usersWhoRatedFirstItem.ToList().ForEach(x => Console.WriteLine("usersWhoRatedFirstItem has " + x));
+                usersWhoRatedSecondItem.ToList().ForEach(x => Console.WriteLine("usersWhoSecondItem has " + x));                
+            }
+
             usersWhoRatedFirstItem.IntersectWith(usersWhoRatedSecondItem);
 
             var usersWhoRatedBothIds = usersWhoRatedFirstItem.ToList();
@@ -202,15 +214,32 @@ namespace Excersise2
             return usersThatRatedBothItems;
         }
 
-        private static double computeDeviation(int firstItemId, int secondItemId, List<User> allUsersThatRatedBoth)
+        private static float computeDeviation(int firstItemId, int secondItemId, List<User> allUsersThatRatedBoth)
         {
-            double deviation = 0.0;
+            float deviation = 0.0f;
 
             foreach (var user in allUsersThatRatedBoth)
             {
+                if(firstItemId == 101)
+                {
+                    Console.WriteLine("User id = " + user.id + " CurrItem = 101. Other item = " + secondItemId + " Adding " + user.ratings[firstItemId] + " - " + user.ratings[secondItemId]);
+                }
+
                 deviation += (user.ratings[firstItemId] - user.ratings[secondItemId]);
+            } 
+
+            float finalDeviation;
+
+            if(allUsersThatRatedBoth.Count > 0)
+            {
+                if(firstItemId == 101)
+                    Console.WriteLine("gonna divide " + deviation + " by " + allUsersThatRatedBoth.Count);
+                finalDeviation = deviation / allUsersThatRatedBoth.Count;
             }
-            return deviation / allUsersThatRatedBoth.Count;
+            else
+                finalDeviation = deviation / 1;
+            
+            return finalDeviation;  
         }
 
 
@@ -219,34 +248,37 @@ namespace Excersise2
             PREDICTION COMPUTATION
         */
 
-        private static List<Tuple<int, double>> computeMultiplePredictions(User subject, List<int> itemsIdsToBePredicted)
+        private static List<Tuple<int, float>> computeMultiplePredictions(User subject, List<int> itemsIdsToBePredicted)
         {
-            var productRatingPredictions = new List<Tuple<int, double>>();
+            var productRatingPredictions = new List<Tuple<int, float>>();
 
             foreach (var itemId in itemsIdsToBePredicted)
             {
                 var item = allItems[itemId];
+                Console.WriteLine("itemId = " + itemId);
                 var predictionForThisItem = computePrediction(subject, item);
 
-                productRatingPredictions.Add(new Tuple<int, double>(itemId, predictionForThisItem));
+                productRatingPredictions.Add(new Tuple<int, float>(itemId, predictionForThisItem));
             }
             return productRatingPredictions;
         }
 
-        private static double computePrediction(User subject, Item itemToBePredicted)
+        private static float computePrediction(User subject, Item itemToBePredicted)
         {
             int totalCardinality = 0;
 
-            double sumOfUsersRatingsAndDeviations = 0.0;
+            float sumOfUsersRatingsAndDeviations = 0.0f;
             foreach (var ratingKV in subject.ratings)
             {
                 var currProductNo = ratingKV.Key;
                 var currProductRating = ratingKV.Value;
 
-                double currProductAndItemToBePredictedDeviation = itemToBePredicted.deviations[ratingKV.Key];
+                float currProductAndItemToBePredictedDeviation = itemToBePredicted.deviations[ratingKV.Key];
                 int currProductCardinality = allItems[currProductNo].amountOfTimesRated;
+                Console.WriteLine(currProductNo + " was rated " + allItems[currProductNo].amountOfTimesRated + " times by user " + subject.id);
 
-                sumOfUsersRatingsAndDeviations += ((ratingKV.Value + currProductAndItemToBePredictedDeviation) * currProductCardinality);
+                sumOfUsersRatingsAndDeviations += ((currProductRating + currProductAndItemToBePredictedDeviation) * currProductCardinality);
+
                 totalCardinality += currProductCardinality;
             }
             return sumOfUsersRatingsAndDeviations / totalCardinality;

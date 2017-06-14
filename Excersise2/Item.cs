@@ -6,6 +6,6 @@ namespace Excersise2
     class Item
     {   
         public int amountOfTimesRated;
-        public Dictionary<int, double> deviations = new Dictionary<int, double>();
+        public Dictionary<int, float> deviations = new Dictionary<int, float>();
     }
 }
