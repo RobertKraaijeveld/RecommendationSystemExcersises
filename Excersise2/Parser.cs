@@ -55,7 +55,7 @@ namespace Excersise2
             return allUsers;
         }
 
-        public Dictionary<int, Item> getParsedItemsWithAmountOfTimesRated()
+        public Dictionary<int, Item> getParsedItems()
         {
             var allItems = new Dictionary<int, Item>();
 
@@ -68,7 +68,6 @@ namespace Excersise2
                 {
                     allItems[articleNo] = new Item();
                 }
-                allItems[articleNo].amountOfTimesRated = allItems[articleNo].amountOfTimesRated + 1;
             }
             return allItems;
         }
